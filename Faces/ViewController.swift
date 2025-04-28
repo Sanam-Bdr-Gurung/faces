@@ -44,6 +44,7 @@ class ViewController: UICollectionViewController,UIImagePickerControllerDelegate
         picker.delegate = self
         present(picker,animated:true)
     }
+    
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         guard let image = info[.editedImage]as? UIImage else { return }
         let imageName = UUID().uuidString
@@ -57,9 +58,27 @@ class ViewController: UICollectionViewController,UIImagePickerControllerDelegate
         collectionView.reloadData()
         dismiss(animated:true)
     }
+    
     func getDocumentsDirectory() -> URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return paths[0]
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+       let person = people[indexPath.item]
+        
+        let ac = UIAlertController(title: "Rename person", message: nil, preferredStyle: .alert)
+        ac.addTextField()
+        
+        ac.addAction(UIAlertAction(title: "OK", style: .default) { [weak self,weak ac] _ in
+            guard let newName = ac?.textFields?.first?.text else { return }
+            person.name = newName
+            self?.collectionView.reloadData()
+        })
+        
+        ac.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        
+        present (ac, animated: true)
     }
 }
 
